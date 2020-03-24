@@ -17,7 +17,7 @@ Some parcel services give you a really hard time when it comes to registering so
 Just pull this package in through composer or by adding it to your `composer.json` file:
 
 ```bash
-$ composer require sauladam/shipment-tracker
+$ composer require ansas/shipment-tracker
 ```
 
 Don't forget to run 
