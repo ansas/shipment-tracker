@@ -33,13 +33,12 @@ class DHL extends AbstractTracker
      */
     protected $parsedJson;
 
-
     /**
      * Hook into the parent method to clear the cache before calling it.
      *
      * @param string $number
-     * @param null $language
-     * @param array $params
+     * @param null   $language
+     * @param array  $params
      *
      * @return Track
      */
@@ -50,6 +49,31 @@ class DHL extends AbstractTracker
         return parent::track($number, $language, $params);
     }
 
+    /**
+     * Build the url for the given tracking number.
+     *
+     * @param string      $trackingNumber
+     * @param string|null $language
+     * @param array       $params
+     *
+     * @return string
+     */
+    public function trackingUrl($trackingNumber, $language = null, $params = [])
+    {
+        $language = $language ?: $this->language;
+
+        $additionalParams = !empty($params) ? $params : $this->trackingUrlParams;
+
+        $urlParams = array_merge([
+            'lang' => $language,
+            'idc'  => $trackingNumber,
+        ],
+            $additionalParams);
+
+        $qry = http_build_query($urlParams);
+
+        return $this->trackingUrl . '?' . $qry;
+    }
 
     /**
      * @param string $contents
@@ -68,7 +92,6 @@ class DHL extends AbstractTracker
         return $this->getTrack($domxpath);
     }
 
-
     /**
      * Get the shipment status history.
      *
@@ -82,11 +105,20 @@ class DHL extends AbstractTracker
         $track = new Track;
 
         foreach ($this->getEvents($xpath) as $event) {
+            if (!isset($event->status)) {
+                continue;
+            }
+
+            $status = $this->resolveStatus(strip_tags($event->status));
+            if ($status == Track::STATUS_MISSING) {
+                continue;
+            }
+
             $track->addEvent(Event::fromArray([
                 'description' => isset($event->status) ? strip_tags($event->status) : '',
-                'status' => $status = isset($event->status) ? $this->resolveStatus(strip_tags($event->status)) : '',
-                'date' => isset($event->datum) ? Carbon::parse($event->datum) : null,
-                'location' => isset($event->ort) ? $event->ort : '',
+                'status'      => $status,
+                'date'        => isset($event->datum) ? Carbon::parse($event->datum) : null,
+                'location'    => isset($event->ort) ? $event->ort : '',
             ]));
 
             if ($status == Track::STATUS_DELIVERED && $recipient = $this->getRecipient($xpath)) {
@@ -97,11 +129,11 @@ class DHL extends AbstractTracker
         return $track->sortEvents();
     }
 
-
     /**
      * Get the events.
      *
      * @param DOMXPath $xpath
+     *
      * @return array
      * @throws \Exception
      */
@@ -110,10 +142,9 @@ class DHL extends AbstractTracker
         $progress = $this->parseJson($xpath)->sendungen[0]->sendungsdetails->sendungsverlauf;
 
         return $progress->fortschritt > 0
-            ? (array)$progress->events
+            ? (array) $progress->events
             : [];
     }
-
 
     /**
      * Parse the recipient.
@@ -132,11 +163,11 @@ class DHL extends AbstractTracker
             : null;
     }
 
-
     /**
      * Parse the JSON from the script tag.
      *
      * @param DOMXPath $xpath
+     *
      * @return mixed|object
      * @throws \Exception
      */
@@ -153,7 +184,9 @@ class DHL extends AbstractTracker
         }
 
         $matched = preg_match(
-            "/initialState: JSON\.parse\((.*)\)\,/m", $scriptTags->item(0)->nodeValue, $matches
+            "/initialState: JSON\.parse\((.*)\)\,/m",
+            $scriptTags->item(0)->nodeValue,
+            $matches
         );
 
         if ($matched !== 1) {
@@ -162,7 +195,6 @@ class DHL extends AbstractTracker
 
         return $this->parsedJson = json_decode(json_decode($matches[1]));
     }
-
 
     /**
      * Match a shipping status from the given description.
@@ -174,7 +206,7 @@ class DHL extends AbstractTracker
     protected function resolveStatus($statusDescription)
     {
         $statuses = [
-            Track::STATUS_DELIVERED => [
+            Track::STATUS_DELIVERED  => [
                 'aus der PACKSTATION abgeholt',
                 'erfolgreich zugestellt',
                 'hat die Sendung in der Filiale abgeholt',
@@ -220,7 +252,7 @@ class DHL extends AbstractTracker
                 'Sendung wurde an DHL übergeben',
                 'Sendung ist in der Region des Empfängers angekommen',
             ],
-            Track::STATUS_PICKUP => [
+            Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der PACKSTATION',
                 'Die Sendung liegt ab sofort in der Filiale',
                 'Uhrzeit der Abholung kann der Benachrichtigungskarte entnommen werden',
@@ -230,12 +262,12 @@ class DHL extends AbstractTracker
                 'Sendung wurde zur Abholung in die',
                 'The shipment is being brought to',
             ],
-            Track::STATUS_INFO => [
+            Track::STATUS_INFO       => [
                 'elektronisch an',
                 'wurde gewählt',
                 'als neue Lieferadresse gewählt',
             ],
-            Track::STATUS_WARNING => [
+            Track::STATUS_WARNING    => [
                 'Sendung konnte nicht zugestellt werden',
                 'Sendung wurde leider fehlgeleitet',
                 'Sendung wurde zurückgestellt',
@@ -249,7 +281,7 @@ class DHL extends AbstractTracker
                 'Sendung wurde fehlgeleitet und konnte nicht zugestellt werden. Die Sendung wird umadressiert und an den',
                 'shipment was misrouted and could not be delivered. The shipment will be readdressed and forwarded to the recipient',
             ],
-            Track::STATUS_EXCEPTION => [
+            Track::STATUS_EXCEPTION  => [
                 'Annahme der Sendung verweigert',
                 'cksendung eingeleitet',
                 'Adressfehlers konnte die Sendung nicht zugestellt',
@@ -278,39 +310,12 @@ class DHL extends AbstractTracker
         return Track::STATUS_UNKNOWN;
     }
 
-
-    /**
-     * Build the url for the given tracking number.
-     *
-     * @param string $trackingNumber
-     * @param string|null $language
-     * @param array $params
-     *
-     * @return string
-     */
-    public function trackingUrl($trackingNumber, $language = null, $params = [])
-    {
-        $language = $language ?: $this->language;
-
-        $additionalParams = !empty($params) ? $params : $this->trackingUrlParams;
-
-        $urlParams = array_merge([
-            'lang' => $language,
-            'idc' => $trackingNumber,
-        ], $additionalParams);
-
-        $qry = http_build_query($urlParams);
-
-        return $this->trackingUrl . '?' . $qry;
-    }
-
-
     /**
      * Build the endpoint url
      *
-     * @param string $trackingNumber
+     * @param string      $trackingNumber
      * @param string|null $language
-     * @param array $params
+     * @param array       $params
      *
      * @return string
      */
@@ -320,12 +325,15 @@ class DHL extends AbstractTracker
 
         $additionalParams = !empty($params) ? $params : $this->endpointUrlParams;
 
-        $urlParams = array_merge([
-            'lang' => $language,
-            'language' => $language,
-            'idc' => $trackingNumber,
-            'domain' => 'de',
-        ], $additionalParams);
+        $urlParams = array_merge(
+            [
+                'lang'     => $language,
+                'language' => $language,
+                'idc'      => $trackingNumber,
+                'domain'   => 'de',
+            ],
+            $additionalParams
+        );
 
         return $this->serviceEndpoint . '?' . http_build_query($urlParams);
     }
