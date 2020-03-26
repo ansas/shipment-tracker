@@ -21,6 +21,8 @@ class Track
      */
     protected $events = [];
 
+    protected $traceable = true;
+
     /**
      * @var bool
      */
@@ -30,7 +32,6 @@ class Track
      * @var string
      */
     protected $recipient;
-
 
     /**
      * Track constructor.
@@ -42,7 +43,6 @@ class Track
         $this->events = $events;
     }
 
-
     /**
      * Get all events.
      *
@@ -52,7 +52,6 @@ class Track
     {
         return $this->events;
     }
-
 
     /**
      * Add an event.
@@ -68,7 +67,6 @@ class Track
         return $this;
     }
 
-
     /**
      * Check if the shipment has been delivered.
      *
@@ -83,7 +81,6 @@ class Track
         return !empty($deliveredEvents);
     }
 
-
     /**
      * Get the current status.
      *
@@ -95,7 +92,6 @@ class Track
 
         return $latestEvent ? $latestEvent->getStatus() : self::STATUS_UNKNOWN;
     }
-
 
     /**
      * Get the latest event.
@@ -111,7 +107,6 @@ class Track
         return $this->eventsAreSorted ? reset($this->events) : end($this->events);
     }
 
-
     /**
      * Check if this track has any events.
      *
@@ -122,7 +117,6 @@ class Track
         return !empty($this->events);
     }
 
-
     /**
      * Get the recipient.
      *
@@ -132,7 +126,6 @@ class Track
     {
         return $this->recipient;
     }
-
 
     /**
      * Set the recipient.
@@ -148,6 +141,18 @@ class Track
         return $this;
     }
 
+    /**
+     * setTraceable
+     *
+     * @param  bool $bool
+     * @return $this
+     */
+    public function setTraceable(bool $bool)
+    {
+        $this->traceable = $bool;
+
+        return $this;
+    }
 
     /**
      * Sort the events by date in descending oder, so that the latest event is always
@@ -168,5 +173,14 @@ class Track
         $this->eventsAreSorted = true;
 
         return $this;
+    }
+
+    /**
+     *
+     * @return bool
+     */
+    public function traceable()
+    {
+        return $this->traceable;
     }
 }

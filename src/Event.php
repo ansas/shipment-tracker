@@ -16,7 +16,7 @@ class Event
     protected $location;
 
     /**
-     * @var Carbon
+     * @var Carbon|null
      */
     protected $date;
 
@@ -30,7 +30,6 @@ class Event
      */
     protected $status;
 
-
     /**
      * Get the location.
      *
@@ -40,7 +39,6 @@ class Event
     {
         return $this->location;
     }
-
 
     /**
      * Set the location.
@@ -56,7 +54,6 @@ class Event
         return $this;
     }
 
-
     /**
      * Get the date.
      *
@@ -67,7 +64,6 @@ class Event
         return $this->date;
     }
 
-
     /**
      * Set the date.
      *
@@ -77,13 +73,12 @@ class Event
      */
     public function setDate($date)
     {
-        $date = $date instanceof Carbon ? $date : Carbon::parse($date);
-
-        $this->date = $date;
-
+        if ($date !== null) {
+            $date = $date instanceof Carbon ? $date : Carbon::parse($date);
+            $this->date = $date;
+        }
         return $this;
     }
-
 
     /**
      * Get the description.
@@ -94,7 +89,6 @@ class Event
     {
         return $this->description;
     }
-
 
     /**
      * Set the description.
@@ -110,7 +104,6 @@ class Event
         return $this;
     }
 
-
     /**
      * Get the status during this event.
      *
@@ -120,7 +113,6 @@ class Event
     {
         return $this->status;
     }
-
 
     /**
      * Set the status.
@@ -135,7 +127,6 @@ class Event
 
         return $this;
     }
-
 
     /**
      * Create an event from the given array.
