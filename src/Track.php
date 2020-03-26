@@ -5,6 +5,9 @@ namespace Sauladam\ShipmentTracker;
 use Sauladam\ShipmentTracker\Utils\AdditionalDetails;
 use Sauladam\ShipmentTracker\Utils\Utils;
 
+/**
+ *
+ */
 class Track
 {
     const STATUS_IN_TRANSIT = 'in_transit';
@@ -23,6 +26,9 @@ class Track
      */
     protected $events = [];
 
+    /**
+     * @var bool
+     */
     protected $traceable = true;
 
     /**

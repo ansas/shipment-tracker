@@ -152,9 +152,6 @@ class PostDE extends AbstractTracker
                 'erfolglosen Zustellversuch',
                 'Annahme verweigert',
             ],
-            Track::STATUS_EXCEPTION  => [
-
-            ],
             Track::STATUS_MISSING    => [
                 'keine Informationen',
             ],
