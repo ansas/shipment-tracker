@@ -158,10 +158,6 @@ class Track
     public function sortEvents()
     {
         usort($this->events, function (Event $a, Event $b) {
-            if ($a->getDate()->toDateTimeString() == $b->getDate()->toDateTimeString()) {
-                return 0;
-            }
-
             return ($a->getDate()->toDateTimeString() > $b->getDate()->toDateTimeString()) ? -1 : 1;
         });
 
