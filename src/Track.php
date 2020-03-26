@@ -14,6 +14,7 @@ class Track
     const STATUS_INFO       = 'info';
     const STATUS_WARNING    = 'warning';
     const STATUS_UNKNOWN    = 'unknown';
+    const STATUS_MISSING    = 'missing';
 
     use AdditionalDetails;
 
@@ -75,9 +76,12 @@ class Track
      */
     public function delivered()
     {
-        $deliveredEvents = array_filter($this->events, function (Event $event) {
-            return $event->getStatus() == self::STATUS_DELIVERED;
-        });
+        $deliveredEvents = array_filter(
+            $this->events,
+            function (Event $event) {
+                return $event->getStatus() == self::STATUS_DELIVERED;
+            }
+        );
 
         return !empty($deliveredEvents);
     }
@@ -145,7 +149,8 @@ class Track
     /**
      * setTraceable
      *
-     * @param  bool $bool
+     * @param bool $bool
+     *
      * @return $this
      */
     public function setTraceable(bool $bool)
@@ -163,9 +168,12 @@ class Track
      */
     public function sortEvents()
     {
-        usort($this->events, function (Event $a, Event $b) {
-            return ($a->getDate()->toDateTimeString() > $b->getDate()->toDateTimeString()) ? -1 : 1;
-        });
+        usort(
+            $this->events,
+            function (Event $a, Event $b) {
+                return ($a->getDate()->toDateTimeString() > $b->getDate()->toDateTimeString()) ? -1 : 1;
+            }
+        );
 
         $this->eventsAreSorted = true;
 

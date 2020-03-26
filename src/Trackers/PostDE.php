@@ -5,6 +5,7 @@ namespace Sauladam\ShipmentTracker\Trackers;
 use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
+use Exception;
 use Sauladam\ShipmentTracker\Event;
 use Sauladam\ShipmentTracker\Track;
 use Sauladam\ShipmentTracker\Utils\XmlHelpers;
@@ -19,24 +20,26 @@ class PostDE extends AbstractTracker
     protected $trackingUrl = 'https://www.deutschepost.de/sendung/simpleQueryResult.html';
 
     /**
-     * @var object
-     */
-    protected $description;
-
-    /**
-     * Hook into the parent method to clear the cache before calling it.
+     * Build the url for the given tracking number.
      *
-     * @param string $number
-     * @param null $language
-     * @param array $params
+     * @param string      $trackingNumber
+     * @param string|null $language
+     * @param array       $params
      *
-     * @return Track
+     * @return string
      */
-    public function track($number, $language = null, $params = [])
+    public function trackingUrl($trackingNumber, $language = null, $params = [])
     {
-        $this->description = null;
+        $additionalParams = !empty($params) ? $params : $this->trackingUrlParams;
 
-        return parent::track($number, $language, $params);
+        $urlParams = array_merge(
+            [
+                'form.sendungsnummer' => $trackingNumber,
+            ],
+            $additionalParams
+        );
+
+        return $this->trackingUrl . '?' . http_build_query($urlParams);
     }
 
     /**
@@ -59,15 +62,19 @@ class PostDE extends AbstractTracker
     /**
      * getDateFormDescription
      *
-     * @param  string $description
+     * @param string $description
+     *
      * @return Carbon|null
      */
     protected function getDateFormDescription(string $description)
     {
-        $pattern = "/[0-9]{2}(\.|-)[0-9]{2}(\.|-)[0-9]{4}/";
-        if (preg_match($pattern, $description, $matches) && $this->resolveStatus($description) == Track::STATUS_DELIVERED) {
-            return new Carbon($matches[0]);
+        if (
+            preg_match("/[0-9]{2}(\.|-)[0-9]{2}(\.|-)[0-9]{4}/", $description, $matches)
+            && $this->resolveStatus($description) == Track::STATUS_DELIVERED
+        ) {
+            return new Carbon($matches[0], 'UTC');
         }
+
         return null;
     }
 
@@ -81,14 +88,22 @@ class PostDE extends AbstractTracker
      */
     protected function getTrack(DOMXPath $xpath)
     {
-        $description = $this->getEventText($xpath);
-        $track = new Track;
-        $track->addEvent(Event::fromArray([
-            'description' => $description,
-            'status' => isset($xpath) ? $this->resolveStatus($description) : '',
-            'date' => $this->getDateFormDescription($description),
-            'location' => null,
-        ]));
+        $track = new Track();
+
+        if (isset($xpath)) {
+            $description = $this->getEventText($xpath);
+            $status      = $this->resolveStatus($description);
+
+            if ($status != Track::STATUS_MISSING) {
+                $track->addEvent(Event::fromArray([
+                    'description' => $description,
+                    'status'      => $status,
+                    'date'        => $this->getDateFormDescription($description),
+                    'location'    => null,
+                ]));
+            }
+        }
+
         return $track->setTraceable(false);
     }
 
@@ -96,18 +111,17 @@ class PostDE extends AbstractTracker
      * Parse the JSON from the script tag.
      *
      * @param DOMXPath $xpath
-     * @return mixed|object
-     * @throws \Exception
+     *
+     * @return string
+     * @throws Exception
      */
     protected function getEventText(DOMXPath $xpath)
     {
-        if ($this->description) {
-            return $this->description;
-        }
         $node = $xpath->query("//td[@class='grey']");
         if ($node->length != 1) {
-            throw new \Exception("Unable to parse PostDE tracking data for [{$this->parcelNumber}].");
+            throw new Exception("Unable to parse PostDE tracking data for [{$this->parcelNumber}].");
         }
+
         return trim($node->item(0)->textContent);
     }
 
@@ -121,8 +135,9 @@ class PostDE extends AbstractTracker
     protected function resolveStatus($statusDescription)
     {
         $statuses = [
-            Track::STATUS_DELIVERED => [
+            Track::STATUS_DELIVERED  => [
                 'Die Sendung wurde am',
+                'in der Filiale abgeholt',
             ],
             Track::STATUS_IN_TRANSIT => [
                 'orts erfasst',
@@ -130,48 +145,29 @@ class PostDE extends AbstractTracker
                 'in unserem Logistikzentrum',
                 'bearbeitet und wird voraussichtlich',
             ],
-            Track::STATUS_PICKUP => [
-
+            Track::STATUS_PICKUP     => [
+                'zur Abholung bereit liegt',
             ],
-            Track::STATUS_WARNING => [
-                'keine Informationen',
+            Track::STATUS_WARNING    => [
                 'erfolglosen Zustellversuch',
                 'Annahme verweigert',
             ],
-            Track::STATUS_EXCEPTION => [
+            Track::STATUS_EXCEPTION  => [
 
+            ],
+            Track::STATUS_MISSING    => [
+                'keine Informationen',
             ],
         ];
 
         foreach ($statuses as $status => $needles) {
             foreach ($needles as $needle) {
-                if (strpos($statusDescription, $needle) !== false) {
+                if (stripos($statusDescription, $needle) !== false) {
                     return $status;
                 }
             }
         }
 
         return Track::STATUS_UNKNOWN;
-    }
-
-    /**
-     * Build the url for the given tracking number.
-     *
-     * @param string $trackingNumber
-     * @param string|null $language
-     * @param array $params
-     *
-     * @return string
-     */
-    public function trackingUrl($trackingNumber, $language = null, $params = [])
-    {
-        $additionalParams = !empty($params) ? $params : $this->trackingUrlParams;
-
-        $urlParams = array_merge([
-            'form.sendungsnummer' => $trackingNumber,
-        ], $additionalParams);
-
-        $qry = http_build_query($urlParams);
-        return $this->trackingUrl . '?' . $qry;
     }
 }
