@@ -57,7 +57,7 @@ class Event
     /**
      * Get the date.
      *
-     * @return Carbon
+     * @return Carbon|null
      */
     public function getDate()
     {
@@ -67,7 +67,7 @@ class Event
     /**
      * Set the date.
      *
-     * @param string|Carbon $date
+     * @param string|Carbon|null $date
      *
      * @return $this
      */

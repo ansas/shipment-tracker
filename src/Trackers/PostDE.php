@@ -2,6 +2,7 @@
 
 namespace Sauladam\ShipmentTracker\Trackers;
 
+use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
 use Sauladam\ShipmentTracker\Event;
@@ -56,6 +57,21 @@ class PostDE extends AbstractTracker
     }
 
     /**
+     * getDateFormDescription
+     *
+     * @param  string $description
+     * @return Carbon|null
+     */
+    protected function getDateFormDescription(string $description)
+    {
+        $pattern = "/[0-9]{2}(\.|-)[0-9]{2}(\.|-)[0-9]{4}/";
+        if (preg_match($pattern, $description, $matches) && $this->resolveStatus($description) == Track::STATUS_DELIVERED) {
+            return new Carbon($matches[0]);
+        }
+        return null;
+    }
+
+    /**
      * Get the shipment status history.
      *
      * @param DOMXPath $xpath
@@ -65,11 +81,12 @@ class PostDE extends AbstractTracker
      */
     protected function getTrack(DOMXPath $xpath)
     {
+        $description = $this->getEventText($xpath);
         $track = new Track;
         $track->addEvent(Event::fromArray([
-            'description' => $this->getEventText($xpath),
-            'status' => isset($xpath) ? $this->resolveStatus($this->getEventText($xpath)) : '',
-            'date' => null,
+            'description' => $description,
+            'status' => isset($xpath) ? $this->resolveStatus($description) : '',
+            'date' => $this->getDateFormDescription($description),
             'location' => null,
         ]));
         return $track->setTraceable(false);
@@ -105,11 +122,13 @@ class PostDE extends AbstractTracker
     {
         $statuses = [
             Track::STATUS_DELIVERED => [
-
+                'Die Sendung wurde am',
             ],
             Track::STATUS_IN_TRANSIT => [
                 'orts erfasst',
                 'verzögert sich',
+                'in unserem Logistikzentrum',
+                'bearbeitet und wird voraussichtlich',
             ],
             Track::STATUS_PICKUP => [
 
