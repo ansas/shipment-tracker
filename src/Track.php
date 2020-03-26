@@ -8,11 +8,12 @@ use Sauladam\ShipmentTracker\Utils\Utils;
 class Track
 {
     const STATUS_IN_TRANSIT = 'in_transit';
-    const STATUS_DELIVERED = 'delivered';
-    const STATUS_PICKUP = 'pickup';
-    const STATUS_EXCEPTION = 'exception';
-    const STATUS_WARNING = 'warning';
-    const STATUS_UNKNOWN = 'unknown';
+    const STATUS_DELIVERED  = 'delivered';
+    const STATUS_PICKUP     = 'pickup';
+    const STATUS_EXCEPTION  = 'exception';
+    const STATUS_INFO       = 'info';
+    const STATUS_WARNING    = 'warning';
+    const STATUS_UNKNOWN    = 'unknown';
 
     use AdditionalDetails;
 
@@ -163,10 +164,6 @@ class Track
     public function sortEvents()
     {
         usort($this->events, function (Event $a, Event $b) {
-            if ($a->getDate()->toDateTimeString() == $b->getDate()->toDateTimeString()) {
-                return 0;
-            }
-
             return ($a->getDate()->toDateTimeString() > $b->getDate()->toDateTimeString()) ? -1 : 1;
         });
 

@@ -190,14 +190,17 @@ class DHL extends AbstractTracker
             ],
             Track::STATUS_IN_TRANSIT => [
                 'in das Zustellfahrzeug geladen',
+                'Verladung ins Zustellfahrzeug',
                 'im Start-Paketzentrum bearbeitet',
                 'im Ziel-Paketzentrum bearbeitet',
                 'im Paketzentrum bearbeitet',
-                'Auftragsdaten zu dieser Sendung wurden vom Absender elektronisch an DHL',
                 'auf dem Weg zur PACKSTATION',
                 'wird in eine PACKSTATION weitergeleitet',
                 'Die Sendung wurde abgeholt',
                 'im Export-Paketzentrum bearbeitet',
+                'wird für den Weitertransport',
+                'wird für die Auslieferung',
+                'auf dem Weg',
                 'Sendung wird ins Zielland transportiert und dort an die Zustellorganisation',
                 'vom Absender in der Filiale eingeliefert',
                 'Sendung konnte nicht in die PACKSTATION eingestellt werden und wurde in eine Filiale',
@@ -214,20 +217,32 @@ class DHL extends AbstractTracker
                 'shipment could not be delivered, and the recipient has been notified',
                 'A 2nd attempt at delivery is being made',
                 'Es erfolgt ein 2. Zustellversuch',
-                'Sendung wurde elektronisch angekündigt',
                 'Sendung wurde an DHL übergeben',
                 'Sendung ist in der Region des Empfängers angekommen',
             ],
             Track::STATUS_PICKUP => [
                 'Die Sendung liegt in der PACKSTATION',
+                'Die Sendung liegt ab sofort in der Filiale',
                 'Uhrzeit der Abholung kann der Benachrichtigungskarte entnommen werden',
                 'earliest time when it can be picked up can be found on the notification card',
                 'shipment is ready for pick-up at the PACKSTATION',
                 'Sendung wird zur Abholung in die',
+                'Sendung wurde zur Abholung in die',
                 'The shipment is being brought to',
+            ],
+            Track::STATUS_INFO => [
+                'elektronisch an',
+                'wurde gewählt',
+                'als neue Lieferadresse gewählt',
             ],
             Track::STATUS_WARNING => [
                 'Sendung konnte nicht zugestellt werden',
+                'Sendung wurde leider fehlgeleitet',
+                'Sendung wurde zurückgestellt',
+                'Sendung verzögert sich',
+                'aufgrund höherer Gewalt',
+                'heute nicht möglich',
+                'nachverpackt',
                 'shipment could not be delivered',
                 'attempting to obtain a new delivery address',
                 'eine neue Zustelladresse für den Empf',
@@ -235,8 +250,12 @@ class DHL extends AbstractTracker
                 'shipment was misrouted and could not be delivered. The shipment will be readdressed and forwarded to the recipient',
             ],
             Track::STATUS_EXCEPTION => [
+                'Annahme der Sendung verweigert',
                 'cksendung eingeleitet',
                 'Adressfehlers konnte die Sendung nicht zugestellt',
+                'war eine Zustellung der Sendung nicht möglich',
+                'entspricht nicht den Versandbedingungen',
+                'nicht unseren Versandbedingungen',
                 'nger ist unbekannt',
                 'The address is incomplete',
                 'ist falsch',
@@ -250,7 +269,7 @@ class DHL extends AbstractTracker
 
         foreach ($statuses as $status => $needles) {
             foreach ($needles as $needle) {
-                if (strpos($statusDescription, $needle) !== false) {
+                if (stripos($statusDescription, $needle) !== false) {
                     return $status;
                 }
             }
