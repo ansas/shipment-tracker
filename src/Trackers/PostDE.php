@@ -32,6 +32,7 @@ class PostDE extends AbstractTracker
     {
         $additionalParams = !empty($params) ? $params : $this->trackingUrlParams;
 
+        /** @noinspection SpellCheckingInspection */
         $urlParams = array_merge(
             [
                 'form.sendungsnummer' => $trackingNumber,
@@ -46,7 +47,7 @@ class PostDE extends AbstractTracker
      * @param string $contents
      *
      * @return Track
-     * @throws \Exception
+     * @throws Exception
      */
     protected function buildResponse($contents)
     {
@@ -54,9 +55,7 @@ class PostDE extends AbstractTracker
         @$dom->loadHTML($contents);
         $dom->preserveWhiteSpace = false;
 
-        $domxpath = new DOMXPath($dom);
-
-        return $this->getTrack($domxpath);
+        return $this->getTrack(new DOMXPath($dom));
     }
 
     /**
@@ -65,12 +64,13 @@ class PostDE extends AbstractTracker
      * @param string $description
      *
      * @return Carbon|null
+     * @throws Exception
      */
     protected function getDateFormDescription(string $description)
     {
         if (
-            preg_match("/[0-9]{2}(\.|-)[0-9]{2}(\.|-)[0-9]{4}/", $description, $matches)
-            && $this->resolveStatus($description) == Track::STATUS_DELIVERED
+            preg_match("/[0-9]{2}[.\-][0-9]{2}[.\-][0-9]{4}/", $description, $matches)
+            && in_array($this->resolveStatus($description), [Track::STATUS_DELIVERED, Track::STATUS_EXCEPTION])
         ) {
             return new Carbon($matches[0], 'UTC');
         }
@@ -84,7 +84,7 @@ class PostDE extends AbstractTracker
      * @param DOMXPath $xpath
      *
      * @return Track
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getTrack(DOMXPath $xpath)
     {
@@ -131,6 +131,7 @@ class PostDE extends AbstractTracker
      * @param $statusDescription
      *
      * @return string
+     * @noinspection SpellCheckingInspection
      */
     protected function resolveStatus($statusDescription)
     {
@@ -150,7 +151,11 @@ class PostDE extends AbstractTracker
             ],
             Track::STATUS_WARNING    => [
                 'erfolglosen Zustellversuch',
+                'Die Sendung konnte weder dem Empfänger noch dem Absender zugestellt werden',
+            ],
+            Track::STATUS_EXCEPTION    => [
                 'Annahme verweigert',
+                'Die Annahme der Sendung wurde am',
             ],
             Track::STATUS_MISSING    => [
                 'keine Informationen',

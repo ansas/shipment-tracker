@@ -5,6 +5,7 @@ namespace Sauladam\ShipmentTracker\Trackers;
 use Carbon\Carbon;
 use DOMDocument;
 use DOMXPath;
+use Exception;
 use Sauladam\ShipmentTracker\Event;
 use Sauladam\ShipmentTracker\Track;
 use Sauladam\ShipmentTracker\Utils\XmlHelpers;
@@ -79,7 +80,7 @@ class DHL extends AbstractTracker
      * @param string $contents
      *
      * @return Track
-     * @throws \Exception
+     * @throws Exception
      */
     protected function buildResponse($contents)
     {
@@ -87,9 +88,7 @@ class DHL extends AbstractTracker
         @$dom->loadHTML($contents);
         $dom->preserveWhiteSpace = false;
 
-        $domxpath = new DOMXPath($dom);
-
-        return $this->getTrack($domxpath);
+        return $this->getTrack(new DOMXPath($dom));
     }
 
     /**
@@ -98,7 +97,7 @@ class DHL extends AbstractTracker
      * @param DOMXPath $xpath
      *
      * @return Track
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getTrack(DOMXPath $xpath)
     {
@@ -135,7 +134,7 @@ class DHL extends AbstractTracker
      * @param DOMXPath $xpath
      *
      * @return array
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getEvents(DOMXPath $xpath)
     {
@@ -152,7 +151,7 @@ class DHL extends AbstractTracker
      * @param DOMXPath $xpath
      *
      * @return null|string
-     * @throws \Exception
+     * @throws Exception
      */
     protected function getRecipient(DOMXPath $xpath)
     {
@@ -169,7 +168,7 @@ class DHL extends AbstractTracker
      * @param DOMXPath $xpath
      *
      * @return mixed|object
-     * @throws \Exception
+     * @throws Exception
      */
     protected function parseJson(DOMXPath $xpath)
     {
@@ -180,17 +179,17 @@ class DHL extends AbstractTracker
         $scriptTags = $xpath->query("//script");
 
         if ($scriptTags->length < 1) {
-            throw new \Exception("Unable to parse DHL tracking data for [{$this->parcelNumber}].");
+            throw new Exception("Unable to parse DHL tracking data for [{$this->parcelNumber}].");
         }
 
         $matched = preg_match(
-            "/initialState: JSON\.parse\((.*)\)\,/m",
+            "/initialState: JSON\.parse\((.*)\),/m",
             $scriptTags->item(0)->nodeValue,
             $matches
         );
 
         if ($matched !== 1) {
-            throw new \Exception("Unable to parse DHL tracking data for [{$this->parcelNumber}].");
+            throw new Exception("Unable to parse DHL tracking data for [{$this->parcelNumber}].");
         }
 
         return $this->parsedJson = json_decode(json_decode($matches[1]));
@@ -202,13 +201,16 @@ class DHL extends AbstractTracker
      * @param $statusDescription
      *
      * @return string
+     * @noinspection SpellCheckingInspection
      */
     protected function resolveStatus($statusDescription)
     {
         $statuses = [
             Track::STATUS_DELIVERED  => [
                 'aus der PACKSTATION abgeholt',
+                'wurde aus der Packstation entnommen',
                 'erfolgreich zugestellt',
+                'am Wunschort abgeholt',
                 'hat die Sendung in der Filiale abgeholt',
                 'des Nachnahme-Betrags an den Zahlungsempf',
                 'Sendung wurde zugestellt an',
@@ -219,6 +221,7 @@ class DHL extends AbstractTracker
                 'item has been sent',
                 'delivered from the delivery depot to the recipient by simplified company delivery',
                 'per vereinfachter Firmenzustellung ab Eingangspaketzentrum zugestellt',
+                'direkt ab Paketzentrum dem Geschäftskunden zugestellt',
             ],
             Track::STATUS_IN_TRANSIT => [
                 'in das Zustellfahrzeug geladen',
@@ -232,6 +235,10 @@ class DHL extends AbstractTracker
                 'im Export-Paketzentrum bearbeitet',
                 'wird für den Weitertransport',
                 'wird für die Auslieferung',
+                'im Paketzentrum eingetroffen',
+                'zum Weitertransport vorbereitet',
+                'zum Weitertransport aus der PACKSTATION entnommen',
+                'für die Zustellung vorbereitet',
                 'auf dem Weg',
                 'Sendung wird ins Zielland transportiert und dort an die Zustellorganisation',
                 'vom Absender in der Filiale eingeliefert',
@@ -251,6 +258,7 @@ class DHL extends AbstractTracker
                 'Es erfolgt ein 2. Zustellversuch',
                 'Sendung wurde an DHL übergeben',
                 'Sendung ist in der Region des Empfängers angekommen',
+                'im Zielland/Zielgebiet eingetroffen',
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der PACKSTATION',
@@ -260,21 +268,28 @@ class DHL extends AbstractTracker
                 'shipment is ready for pick-up at the PACKSTATION',
                 'Sendung wird zur Abholung in die',
                 'Sendung wurde zur Abholung in die',
+                'wurde in eine Filiale weitergeleitet',
                 'The shipment is being brought to',
             ],
             Track::STATUS_INFO       => [
                 'elektronisch an',
                 'wurde gewählt',
                 'als neue Lieferadresse gewählt',
+                'wird die Sendung an eine neue Empfängeradresse gesandt',
+                'wird bei uns gelagert',
             ],
             Track::STATUS_WARNING    => [
                 'Sendung konnte nicht zugestellt werden',
+                'Zustellversuch nicht zugestellt werden',
+                'nicht zugestellt werden. Die Sendung wird voraussichtlich',
                 'Sendung wurde leider fehlgeleitet',
                 'Sendung wurde zurückgestellt',
                 'Sendung verzögert sich',
                 'aufgrund höherer Gewalt',
                 'heute nicht möglich',
                 'nachverpackt',
+                'neu verpackt',
+                'Sendung wurde beschädigt',
                 'shipment could not be delivered',
                 'attempting to obtain a new delivery address',
                 'eine neue Zustelladresse für den Empf',
@@ -296,6 +311,7 @@ class DHL extends AbstractTracker
                 'nicht in der Filiale abgeholt',
                 'The shipment is being returned',
                 'Es erfolgt eine Rücksendung',
+                'an den Absender zurückgesandt',
             ],
         ];
 
