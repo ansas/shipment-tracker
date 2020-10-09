@@ -172,27 +172,24 @@ class DHL extends AbstractTracker
      */
     protected function parseJson(DOMXPath $xpath)
     {
-        if ($this->parsedJson) {
-            return $this->parsedJson;
+        if (!$this->parsedJson) {
+            $scriptTags = $xpath->query("//script");
+
+            /** @var \DOMNode $tag */
+            foreach ($scriptTags as $tag) {
+                $matched = preg_match("/initialState: JSON\.parse\((.*)\),/m", $tag->nodeValue, $matches);
+                if ($matched) {
+                    $this->parsedJson = json_decode(json_decode($matches[1]));
+                }
+            }
+
+            if (!$this->parsedJson) {
+                throw new Exception("Unable to parse DHL tracking data for [{$this->parcelNumber}].");
+            }
         }
 
-        $scriptTags = $xpath->query("//script");
 
-        if ($scriptTags->length < 1) {
-            throw new Exception("Unable to parse DHL tracking data for [{$this->parcelNumber}].");
-        }
-
-        $matched = preg_match(
-            "/initialState: JSON\.parse\((.*)\),/m",
-            $scriptTags->item(0)->nodeValue,
-            $matches
-        );
-
-        if ($matched !== 1) {
-            throw new Exception("Unable to parse DHL tracking data for [{$this->parcelNumber}].");
-        }
-
-        return $this->parsedJson = json_decode(json_decode($matches[1]));
+        return $this->parsedJson;
     }
 
     /**
