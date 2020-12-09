@@ -125,7 +125,9 @@ class DHL extends AbstractTracker
             }
         }
 
-        return $track->sortEvents();
+        $track->sortEvents();
+
+        return $track;
     }
 
     /**

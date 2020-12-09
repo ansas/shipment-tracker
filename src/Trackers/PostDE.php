@@ -68,9 +68,15 @@ class PostDE extends AbstractTracker
      */
     protected function getDateFormDescription(string $description)
     {
+        $dateAllowedForStatus = [
+            Track::STATUS_DELIVERED,
+            Track::STATUS_WARNING,
+            Track::STATUS_EXCEPTION,
+        ];
+
         if (
             preg_match("/[0-9]{2}[.\-][0-9]{2}[.\-][0-9]{4}/", $description, $matches)
-            && in_array($this->resolveStatus($description), [Track::STATUS_DELIVERED, Track::STATUS_EXCEPTION])
+            && in_array($this->resolveStatus($description), $dateAllowedForStatus)
         ) {
             return new Carbon($matches[0], 'UTC');
         }
@@ -104,7 +110,9 @@ class PostDE extends AbstractTracker
             }
         }
 
-        return $track->setTraceable(false);
+        $track->setTraceable(false);
+
+        return $track;
     }
 
     /**
@@ -151,9 +159,11 @@ class PostDE extends AbstractTracker
             ],
             Track::STATUS_WARNING    => [
                 'erfolglosen Zustellversuch',
+                'nicht zugestellt werden',
+                'wurde nicht abgeholt',
                 'Die Sendung konnte weder dem Empfänger noch dem Absender zugestellt werden',
             ],
-            Track::STATUS_EXCEPTION    => [
+            Track::STATUS_EXCEPTION  => [
                 'Annahme verweigert',
                 'Die Annahme der Sendung wurde am',
             ],
