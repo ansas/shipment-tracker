@@ -168,17 +168,26 @@ class Track
     }
 
     /**
-     * Sort the events by date in descending oder, so that the latest event is always
-     * the first item in the array.
+     * Sort the events by date in descending order, so that the latest event is always
+     * the first item in the array. Exception: digital events are put at end of array.
      *
      * @return $this
      */
     public function sortEvents()
     {
+        // Sort by date desc (newest event first)
         usort(
             $this->events,
             function (Event $a, Event $b) {
                 return ($a->getDate()->toDateTimeString() > $b->getDate()->toDateTimeString()) ? -1 : 1;
+            }
+        );
+
+        // Push all digital events to end of list
+        usort(
+            $this->events,
+            function (Event $a, Event $b) {
+                return ($a->getStatus() != Track::STATUS_DIGITAL) ? -1 : 1;
             }
         );
 
