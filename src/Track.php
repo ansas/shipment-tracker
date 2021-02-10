@@ -10,14 +10,15 @@ use Sauladam\ShipmentTracker\Utils\Utils;
  */
 class Track
 {
-    const STATUS_IN_TRANSIT = 'in_transit';
     const STATUS_DELIVERED  = 'delivered';
-    const STATUS_PICKUP     = 'pickup';
+    const STATUS_DIGITAL    = 'digital';
     const STATUS_EXCEPTION  = 'exception';
     const STATUS_INFO       = 'info';
-    const STATUS_WARNING    = 'warning';
-    const STATUS_UNKNOWN    = 'unknown';
+    const STATUS_IN_TRANSIT = 'in_transit';
     const STATUS_MISSING    = 'missing';
+    const STATUS_PICKUP     = 'pickup';
+    const STATUS_UNKNOWN    = 'unknown';
+    const STATUS_WARNING    = 'warning';
 
     use AdditionalDetails;
 

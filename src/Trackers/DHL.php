@@ -190,7 +190,6 @@ class DHL extends AbstractTracker
             }
         }
 
-
         return $this->parsedJson;
     }
 
@@ -273,8 +272,10 @@ class DHL extends AbstractTracker
                 'wurde in eine Filiale weitergeleitet',
                 'The shipment is being brought to',
             ],
-            Track::STATUS_INFO       => [
+            Track::STATUS_DIGITAL    => [
                 'elektronisch an',
+            ],
+            Track::STATUS_INFO       => [
                 'wurde gewählt',
                 'als neue Lieferadresse gewählt',
                 'wird die Sendung an eine neue Empfängeradresse gesandt',
