@@ -231,6 +231,8 @@ class DHL extends AbstractTracker
                 'auf dem Weg zur PACKSTATION',
                 'wird in eine PACKSTATION weitergeleitet',
                 'Die Sendung wurde abgeholt',
+                'Sendung wurde im Briefzentrum bearbeitet',
+                'Sendung wird an die Hausadresse zugestellt',
                 'im Export-Paketzentrum bearbeitet',
                 'wird für den Weitertransport',
                 'wird für die Auslieferung',
@@ -260,6 +262,8 @@ class DHL extends AbstractTracker
                 'Sendung wurde an DHL übergeben',
                 'Sendung ist in der Region des Empfängers angekommen',
                 'im Zielland/Zielgebiet eingetroffen',
+                'Abholauftrag wurde zur Durchführung am nächsten Werktag',
+                'Eine Nachricht wurde zugestellt',
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der PACKSTATION',
@@ -282,6 +286,7 @@ class DHL extends AbstractTracker
                 'wird bei uns gelagert',
                 'erneuter Zustellversuch am nächsten Werktag',
                 'Wunsch des Empfängers',
+                'wurde vom Absender in die Packstation eingeliefert',
             ],
             Track::STATUS_WARNING    => [
                 'Sendung konnte nicht zugestellt werden',
