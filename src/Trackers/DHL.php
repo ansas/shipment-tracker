@@ -264,6 +264,10 @@ class DHL extends AbstractTracker
                 'im Zielland/Zielgebiet eingetroffen',
                 'Abholauftrag wurde zur Durchführung am nächsten Werktag',
                 'Eine Nachricht wurde zugestellt',
+                'wird ins Zielland/Zielgebiet transportiert',
+                'Import-Paketzentrum im Zielland/Zielgebiet verlassen',
+                'wird zur Verzollung im Zielland/Zielgebiet vorbereitet',
+                'wurde durch den Zoll im Zielland/Zielgebiet freigegeben',
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der PACKSTATION',
@@ -274,19 +278,24 @@ class DHL extends AbstractTracker
                 'Sendung wird zur Abholung in die',
                 'Sendung wurde zur Abholung in die',
                 'wurde in eine Filiale weitergeleitet',
+                'wurde an eine Hauspoststelle weitergeleitet',
                 'The shipment is being brought to',
+                'beim Zoll abholen',
+                'liegt für den Empfänger zur Abholung bereit',
             ],
             Track::STATUS_DIGITAL    => [
                 'elektronisch an',
             ],
             Track::STATUS_INFO       => [
                 'wurde gewählt',
+                'als Empfangsoption vorgemerkt',
                 'als neue Lieferadresse gewählt',
                 'wird die Sendung an eine neue Empfängeradresse gesandt',
                 'wird bei uns gelagert',
                 'erneuter Zustellversuch am nächsten Werktag',
                 'Wunsch des Empfängers',
                 'wurde vom Absender in die Packstation eingeliefert',
+                'Abgang der Sendung aus der Paketermittlung',
             ],
             Track::STATUS_WARNING    => [
                 'Sendung konnte nicht zugestellt werden',
@@ -306,6 +315,10 @@ class DHL extends AbstractTracker
                 'eine neue Zustelladresse für den Empf',
                 'Sendung wurde fehlgeleitet und konnte nicht zugestellt werden. Die Sendung wird umadressiert und an den',
                 'shipment was misrouted and could not be delivered. The shipment will be readdressed and forwarded to the recipient',
+                'höhere Gewalt',
+                'gewünschte Liefertag wurde storniert',
+                'konnte leider nicht in die gewünschte Packstation eingestellt werden',
+                'Empfänger wurde nicht angetroffen',
             ],
             Track::STATUS_EXCEPTION  => [
                 'Annahme der Sendung verweigert',
@@ -325,6 +338,7 @@ class DHL extends AbstractTracker
                 'Es erfolgt eine Rücksendung',
                 'an den Absender zurückgesandt',
                 'Es erfolgte keine Einlieferung zu der per EDI Daten beauftragten Sendung',
+                'leeres Fach in Packstation vorgefunden',
             ],
         ];
 
