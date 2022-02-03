@@ -268,6 +268,8 @@ class DHL extends AbstractTracker
                 'Import-Paketzentrum im Zielland/Zielgebiet verlassen',
                 'wird zur Verzollung im Zielland/Zielgebiet vorbereitet',
                 'wurde durch den Zoll im Zielland/Zielgebiet freigegeben',
+                'im Start-Paketzentrum eingetroffen',
+                'Die Sendung wird bearbeitet',
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der PACKSTATION',
@@ -319,6 +321,8 @@ class DHL extends AbstractTracker
                 'gewünschte Liefertag wurde storniert',
                 'konnte leider nicht in die gewünschte Packstation eingestellt werden',
                 'Empfänger wurde nicht angetroffen',
+                'Aufgrund eines Nachsendeauftrags',
+                'Aufgrund einer Beschädigung',
             ],
             Track::STATUS_EXCEPTION  => [
                 'Annahme der Sendung verweigert',
