@@ -212,7 +212,7 @@ class DHL extends AbstractTracker
                 'am Wunschort abgeholt',
                 'hat die Sendung in der Filiale abgeholt',
                 'des Nachnahme-Betrags an den Zahlungsempf',
-                'Sendung wurde zugestellt an',
+                'Sendung wurde zugestellt',
                 'Die Sendung wurde ausgeliefert',
                 'shipment has been successfully delivered',
                 'recipient has picked up the shipment from the retail outlet',
