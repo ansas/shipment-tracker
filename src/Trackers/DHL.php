@@ -270,6 +270,8 @@ class DHL extends AbstractTracker
                 'wurde durch den Zoll im Zielland/Zielgebiet freigegeben',
                 'im Start-Paketzentrum eingetroffen',
                 'Die Sendung wird bearbeitet',
+                'wurde zur Zustellung übergeben',
+                'Export-Paketzentrum eingetroffen'
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der PACKSTATION',
@@ -302,6 +304,7 @@ class DHL extends AbstractTracker
             Track::STATUS_WARNING    => [
                 'Sendung konnte nicht zugestellt werden',
                 'Zustellversuch nicht zugestellt werden',
+                'heute leider nicht zugestellt werden',
                 'nicht zugestellt werden. Die Sendung wird voraussichtlich',
                 'Sendung wurde leider fehlgeleitet',
                 'Sendung wurde zurückgestellt',
@@ -343,6 +346,9 @@ class DHL extends AbstractTracker
                 'an den Absender zurückgesandt',
                 'Es erfolgte keine Einlieferung zu der per EDI Daten beauftragten Sendung',
                 'leeres Fach in Packstation vorgefunden',
+                'Paketermittlung',
+                'Rücknahme der Sendung verweigert',
+                'Sendung ist beschädigt',
             ],
         ];
 
