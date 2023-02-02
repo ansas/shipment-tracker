@@ -275,7 +275,7 @@ class DHL extends AbstractTracker
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der PACKSTATION',
-                'Die Sendung liegt ab sofort in der Filiale',
+                'Die Sendung liegt ab sofort in der',
                 'Uhrzeit der Abholung kann der Benachrichtigungskarte entnommen werden',
                 'earliest time when it can be picked up can be found on the notification card',
                 'shipment is ready for pick-up at the PACKSTATION',
@@ -300,6 +300,7 @@ class DHL extends AbstractTracker
                 'Wunsch des Empfängers',
                 'wurde vom Absender in die Packstation eingeliefert',
                 'Abgang der Sendung aus der Paketermittlung',
+                'Paketmitnahme vom Ablageort gebucht',
             ],
             Track::STATUS_WARNING    => [
                 'Sendung konnte nicht zugestellt werden',
@@ -326,6 +327,7 @@ class DHL extends AbstractTracker
                 'Empfänger wurde nicht angetroffen',
                 'Aufgrund eines Nachsendeauftrags',
                 'Aufgrund einer Beschädigung',
+                'wegen Streik nicht möglich',
             ],
             Track::STATUS_EXCEPTION  => [
                 'Annahme der Sendung verweigert',
