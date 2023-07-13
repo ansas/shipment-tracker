@@ -205,6 +205,7 @@ class DHL extends AbstractTracker
     {
         $statuses = [
             Track::STATUS_DELIVERED  => [
+                'Abholung aus Packstation',
                 'aus der PACKSTATION abgeholt',
                 'wurde aus der Packstation entnommen',
                 'erfolgreich zugestellt',
@@ -223,6 +224,8 @@ class DHL extends AbstractTracker
                 'direkt ab Paketzentrum dem Geschäftskunden zugestellt',
             ],
             Track::STATUS_IN_TRANSIT => [
+                'Zustellung an Packstation', // no pickup yet, in transit
+                'Weiterleitung an Filiale',
                 'in das Zustellfahrzeug geladen',
                 'Verladung ins Zustellfahrzeug',
                 'im Start-Paketzentrum bearbeitet',
@@ -274,6 +277,7 @@ class DHL extends AbstractTracker
                 'Export-Paketzentrum eingetroffen'
             ],
             Track::STATUS_PICKUP     => [
+                'liegt in der Filiale zur Abholung',
                 'Die Sendung liegt in der PACKSTATION',
                 'Die Sendung liegt ab sofort in der',
                 'Uhrzeit der Abholung kann der Benachrichtigungskarte entnommen werden',
@@ -291,6 +295,7 @@ class DHL extends AbstractTracker
                 'elektronisch an',
             ],
             Track::STATUS_INFO       => [
+                'Neue Zustellanschrift:',
                 'wurde gewählt',
                 'als Empfangsoption vorgemerkt',
                 'als neue Lieferadresse gewählt',
@@ -303,6 +308,9 @@ class DHL extends AbstractTracker
                 'Paketmitnahme vom Ablageort gebucht',
             ],
             Track::STATUS_WARNING    => [
+                'Einstellung in Packstation nicht möglich',
+                'Zweiter Zustellversuch erfolglos',
+                'Zur Abholung benötigte Benachrichtigungskarte wird per Brief zugestellt',
                 'Sendung konnte nicht zugestellt werden',
                 'Zustellversuch nicht zugestellt werden',
                 'heute leider nicht zugestellt werden',
@@ -330,6 +338,8 @@ class DHL extends AbstractTracker
                 'wegen Streik nicht möglich',
             ],
             Track::STATUS_EXCEPTION  => [
+                'Aufgrund fehlender Adressangaben wird aktuell der Empfänger der Sendung ermittelt',
+                'Lagerfrist überschritten',
                 'Annahme der Sendung verweigert',
                 'cksendung eingeleitet',
                 'Adressfehlers konnte die Sendung nicht zugestellt',
