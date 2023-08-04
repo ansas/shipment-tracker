@@ -138,7 +138,7 @@ class DHL extends AbstractTracker
         $shipings = $this->parseJson($xpath)->sendungen ?? [];
 
         foreach ($shipings as $shiping){
-            if ($shiping->plzBenoetigt === true) {
+            if ($shiping->plzBenoetigt ?? false) {
                 return true;
             }
         }
