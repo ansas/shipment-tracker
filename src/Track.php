@@ -30,6 +30,11 @@ class Track
     /**
      * @var bool
      */
+    protected $zipRequired = false;
+
+    /**
+     * @var bool
+     */
     protected $traceable = true;
 
     /**
@@ -168,6 +173,19 @@ class Track
     }
 
     /**
+     * @param bool $zipRequired
+     *
+     * @return $this
+     */
+    public function setZipRequired(bool $zipRequired)
+    {
+        $this->zipRequired = $zipRequired;
+
+        return $this;
+    }
+
+
+    /**
      * Sort the events by date in descending order, so that the latest event is always
      * the first item in the array. Exception: digital events are put at end of array.
      *
@@ -203,5 +221,10 @@ class Track
     public function traceable()
     {
         return $this->traceable;
+    }
+
+    public function isZipRequired(): bool
+    {
+        return $this->zipRequired;
     }
 }

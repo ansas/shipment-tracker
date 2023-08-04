@@ -8,6 +8,7 @@ use DOMXPath;
 use Exception;
 use Sauladam\ShipmentTracker\Event;
 use Sauladam\ShipmentTracker\Track;
+use Sauladam\ShipmentTracker\Utils\StatusMapper;
 use Sauladam\ShipmentTracker\Utils\XmlHelpers;
 
 class DHL extends AbstractTracker
@@ -103,12 +104,14 @@ class DHL extends AbstractTracker
     {
         $track = new Track;
 
+        $track->setZipRequired($this->isZipRequired($xpath));
+
         foreach ($this->getEvents($xpath) as $event) {
             if (!isset($event->status)) {
                 continue;
             }
 
-            $status = $this->resolveStatus(strip_tags($event->status));
+            $status = StatusMapper::fromDescription(strip_tags($event->status));
             if ($status == Track::STATUS_MISSING) {
                 continue;
             }
@@ -128,6 +131,19 @@ class DHL extends AbstractTracker
         $track->sortEvents();
 
         return $track;
+    }
+
+    protected function isZipRequired(DOMXPath $xpath): bool
+    {
+        $shipings = $this->parseJson($xpath)->sendungen ?? [];
+
+        foreach ($shipings as $shiping){
+            if ($shiping->plzBenoetigt === true) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -191,188 +207,6 @@ class DHL extends AbstractTracker
         }
 
         return $this->parsedJson;
-    }
-
-    /**
-     * Match a shipping status from the given description.
-     *
-     * @param $statusDescription
-     *
-     * @return string
-     * @noinspection SpellCheckingInspection
-     */
-    protected function resolveStatus($statusDescription)
-    {
-        $statuses = [
-            Track::STATUS_DELIVERED  => [
-                'Abholung aus Packstation',
-                'aus der PACKSTATION abgeholt',
-                'wurde aus der Packstation entnommen',
-                'erfolgreich zugestellt',
-                'im Rahmen der kontaktlosen Zustellung zugestellt',
-                'am Wunschort abgeholt',
-                'hat die Sendung in der Filiale abgeholt',
-                'des Nachnahme-Betrags an den Zahlungsempf',
-                'Sendung wurde zugestellt',
-                'Die Sendung wurde ausgeliefert',
-                'shipment has been successfully delivered',
-                'recipient has picked up the shipment from the retail outlet',
-                'recipient has picked up the shipment from the PACKSTATION',
-                'item has been sent',
-                'delivered from the delivery depot to the recipient by simplified company delivery',
-                'per vereinfachter Firmenzustellung ab Eingangspaketzentrum zugestellt',
-                'direkt ab Paketzentrum dem Geschäftskunden zugestellt',
-            ],
-            Track::STATUS_IN_TRANSIT => [
-                'Zustellung an Packstation', // no pickup yet, in transit
-                'Weiterleitung an Filiale',
-                'in das Zustellfahrzeug geladen',
-                'Verladung ins Zustellfahrzeug',
-                'im Start-Paketzentrum bearbeitet',
-                'im Ziel-Paketzentrum bearbeitet',
-                'im Paketzentrum bearbeitet',
-                'auf dem Weg zur PACKSTATION',
-                'wird in eine PACKSTATION weitergeleitet',
-                'Die Sendung wurde abgeholt',
-                'Sendung wurde im Briefzentrum bearbeitet',
-                'Sendung wird an die Hausadresse zugestellt',
-                'im Export-Paketzentrum bearbeitet',
-                'wird für den Weitertransport',
-                'wird für die Auslieferung',
-                'im Paketzentrum eingetroffen',
-                'zum Weitertransport vorbereitet',
-                'für den Weitertransport vorbereitet',
-                'für den Transport vorbereitet',
-                'zum Weitertransport aus der PACKSTATION entnommen',
-                'für die Zustellung vorbereitet',
-                'auf dem Weg',
-                'Sendung wird ins Zielland transportiert und dort an die Zustellorganisation',
-                'vom Absender in der Filiale eingeliefert',
-                'Sendung konnte nicht in die PACKSTATION eingestellt werden und wurde in eine Filiale',
-                'Sendung konnte nicht zugestellt werden und wird jetzt zur Abholung in die Filiale/Agentur gebracht',
-                'shipment has been picked up',
-                'instruction data for this shipment have been provided',
-                'shipment has been processed',
-                'shipment has been posted by the sender',
-                'hipment has been loaded onto the delivery vehicle',
-                'A 2nd attempt at delivery is being made',
-                'shipment is on its way to the PACKSTATION',
-                'forwarded to a PACKSTATION',
-                'shipment could not be delivered to the PACKSTATION and has been forwarded to a retail outlet',
-                'shipment could not be delivered, and the recipient has been notified',
-                'A 2nd attempt at delivery is being made',
-                'Es erfolgt ein 2. Zustellversuch',
-                'Sendung wurde an DHL übergeben',
-                'Sendung ist in der Region des Empfängers angekommen',
-                'im Zielland/Zielgebiet eingetroffen',
-                'Abholauftrag wurde zur Durchführung am nächsten Werktag',
-                'Eine Nachricht wurde zugestellt',
-                'wird ins Zielland/Zielgebiet transportiert',
-                'Import-Paketzentrum im Zielland/Zielgebiet verlassen',
-                'wird zur Verzollung im Zielland/Zielgebiet vorbereitet',
-                'wurde durch den Zoll im Zielland/Zielgebiet freigegeben',
-                'im Start-Paketzentrum eingetroffen',
-                'Die Sendung wird bearbeitet',
-                'wurde zur Zustellung übergeben',
-                'Export-Paketzentrum eingetroffen'
-            ],
-            Track::STATUS_PICKUP     => [
-                'liegt in der Filiale zur Abholung',
-                'Die Sendung liegt in der PACKSTATION',
-                'Die Sendung liegt ab sofort in der',
-                'Uhrzeit der Abholung kann der Benachrichtigungskarte entnommen werden',
-                'earliest time when it can be picked up can be found on the notification card',
-                'shipment is ready for pick-up at the PACKSTATION',
-                'Sendung wird zur Abholung in die',
-                'Sendung wurde zur Abholung in die',
-                'wurde in eine Filiale weitergeleitet',
-                'wurde an eine Hauspoststelle weitergeleitet',
-                'The shipment is being brought to',
-                'beim Zoll abholen',
-                'liegt für den Empfänger zur Abholung bereit',
-            ],
-            Track::STATUS_DIGITAL    => [
-                'elektronisch an',
-            ],
-            Track::STATUS_INFO       => [
-                'Neue Zustellanschrift:',
-                'wurde gewählt',
-                'als Empfangsoption vorgemerkt',
-                'als neue Lieferadresse gewählt',
-                'wird die Sendung an eine neue Empfängeradresse gesandt',
-                'wird bei uns gelagert',
-                'erneuter Zustellversuch am nächsten Werktag',
-                'Wunsch des Empfängers',
-                'wurde vom Absender in die Packstation eingeliefert',
-                'Abgang der Sendung aus der Paketermittlung',
-                'Paketmitnahme vom Ablageort gebucht',
-            ],
-            Track::STATUS_WARNING    => [
-                'Einstellung in Packstation nicht möglich',
-                'Zweiter Zustellversuch erfolglos',
-                'Zur Abholung benötigte Benachrichtigungskarte wird per Brief zugestellt',
-                'Sendung konnte nicht zugestellt werden',
-                'Zustellversuch nicht zugestellt werden',
-                'heute leider nicht zugestellt werden',
-                'nicht zugestellt werden. Die Sendung wird voraussichtlich',
-                'Sendung wurde leider fehlgeleitet',
-                'Sendung wurde zurückgestellt',
-                'Sendung verzögert sich',
-                'aufgrund höherer Gewalt',
-                'heute nicht möglich',
-                'nachverpackt',
-                'neu verpackt',
-                'Sendung wurde beschädigt',
-                'beschädigte Sendung',
-                'shipment could not be delivered',
-                'attempting to obtain a new delivery address',
-                'eine neue Zustelladresse für den Empf',
-                'Sendung wurde fehlgeleitet und konnte nicht zugestellt werden. Die Sendung wird umadressiert und an den',
-                'shipment was misrouted and could not be delivered. The shipment will be readdressed and forwarded to the recipient',
-                'höhere Gewalt',
-                'gewünschte Liefertag wurde storniert',
-                'konnte leider nicht in die gewünschte Packstation eingestellt werden',
-                'Empfänger wurde nicht angetroffen',
-                'Aufgrund eines Nachsendeauftrags',
-                'Aufgrund einer Beschädigung',
-                'wegen Streik nicht möglich',
-            ],
-            Track::STATUS_EXCEPTION  => [
-                'Aufgrund fehlender Adressangaben wird aktuell der Empfänger der Sendung ermittelt',
-                'Lagerfrist überschritten',
-                'Annahme der Sendung verweigert',
-                'cksendung eingeleitet',
-                'Adressfehlers konnte die Sendung nicht zugestellt',
-                'Zustelladresse nicht angefahren',
-                'war eine Zustellung der Sendung nicht möglich',
-                'entspricht nicht den Versandbedingungen',
-                'nicht unseren Versandbedingungen',
-                'nger ist unbekannt',
-                'The address is incomplete',
-                'ist falsch',
-                'is incorrect',
-                'recipient has not picked up the shipment',
-                'nicht in der Filiale abgeholt',
-                'The shipment is being returned',
-                'Es erfolgt eine Rücksendung',
-                'an den Absender zurückgesandt',
-                'Es erfolgte keine Einlieferung zu der per EDI Daten beauftragten Sendung',
-                'leeres Fach in Packstation vorgefunden',
-                'Paketermittlung',
-                'Rücknahme der Sendung verweigert',
-                'Sendung ist beschädigt',
-            ],
-        ];
-
-        foreach ($statuses as $status => $needles) {
-            foreach ($needles as $needle) {
-                if (stripos($statusDescription, $needle) !== false) {
-                    return $status;
-                }
-            }
-        }
-
-        return Track::STATUS_UNKNOWN;
     }
 
     /**
