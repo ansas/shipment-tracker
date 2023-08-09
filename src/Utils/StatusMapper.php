@@ -10,6 +10,8 @@ class StatusMapper
     {
         $statuses = [
             Track::STATUS_DELIVERED  => [
+                'Zustellung erfolgreich',
+                'Abholung in der Filiale ist erfolgt',
                 'Abholung aus Packstation',
                 'aus der PACKSTATION abgeholt',
                 'wurde aus der Packstation entnommen',
@@ -29,6 +31,8 @@ class StatusMapper
                 'direkt ab Paketzentrum dem Geschäftskunden zugestellt',
             ],
             Track::STATUS_IN_TRANSIT => [
+                'für Weitertransport vorbereitet',
+                'In Zustellung',
                 'Zustellung an Packstation', // no pickup yet, in transit
                 'Weiterleitung an Filiale',
                 'in das Zustellfahrzeug geladen',
@@ -82,6 +86,8 @@ class StatusMapper
                 'Export-Paketzentrum eingetroffen'
             ],
             Track::STATUS_PICKUP     => [
+                'Die Sendung liegt in der',
+                'Die Sendung liegt zur Abholung',
                 'liegt in der Filiale zur Abholung',
                 'Die Sendung liegt in der PACKSTATION',
                 'Die Sendung liegt ab sofort in der',
@@ -113,6 +119,7 @@ class StatusMapper
                 'Paketmitnahme vom Ablageort gebucht',
             ],
             Track::STATUS_WARNING    => [
+                'Verzögerte Zustellung',
                 'Einstellung in Packstation nicht möglich',
                 'Zweiter Zustellversuch erfolglos',
                 'Zur Abholung benötigte Benachrichtigungskarte wird per Brief zugestellt',
