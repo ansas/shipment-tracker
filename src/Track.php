@@ -35,6 +35,11 @@ class Track
     /**
      * @var bool
      */
+    protected $hasPickup = false;
+
+    /**
+     * @var bool
+     */
     protected $traceable = true;
 
     /**
@@ -172,6 +177,13 @@ class Track
         return $this;
     }
 
+    public function setHasPickup(bool $hasPickup): Track
+    {
+        $this->hasPickup = $hasPickup;
+
+        return $this;
+    }
+
     /**
      * @param bool $zipRequired
      *
@@ -183,7 +195,6 @@ class Track
 
         return $this;
     }
-
 
     /**
      * Sort the events by date in descending order, so that the latest event is always
@@ -226,5 +237,10 @@ class Track
     public function isZipRequired(): bool
     {
         return $this->zipRequired;
+    }
+
+    public function hasPickup(): bool
+    {
+        return $this->hasPickup;
     }
 }

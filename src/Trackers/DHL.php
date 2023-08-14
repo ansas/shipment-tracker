@@ -116,6 +116,10 @@ class DHL extends AbstractTracker
                 continue;
             }
 
+            if ($status == Track::STATUS_PICKUP) {
+                $track->setHasPickup(true);
+            }
+
             $track->addEvent(Event::fromArray([
                 'description' => isset($event->status) ? strip_tags($event->status) : '',
                 'status'      => $status,
