@@ -83,7 +83,12 @@ class StatusMapper
                 'im Start-Paketzentrum eingetroffen',
                 'Die Sendung wird bearbeitet',
                 'wurde zur Zustellung übergeben',
-                'Export-Paketzentrum eingetroffen'
+                'Export-Paketzentrum eingetroffen',
+                'Abholung erfolgreich',
+                'Abholung wurde erfolgreich',
+                'Vorbereitung für Weitertransport',
+                'Auslands-Sendung an DHL übergeben',
+                'Bearbeitung in der Zustellbasis',
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der',
@@ -117,6 +122,7 @@ class StatusMapper
                 'wurde vom Absender in die Packstation eingeliefert',
                 'Abgang der Sendung aus der Paketermittlung',
                 'Paketmitnahme vom Ablageort gebucht',
+                'Weiterleitung an neue Empfängeradresse',
             ],
             Track::STATUS_WARNING    => [
                 'Verzögerte Zustellung',
@@ -173,6 +179,7 @@ class StatusMapper
                 'Paketermittlung',
                 'Rücknahme der Sendung verweigert',
                 'Sendung ist beschädigt',
+                'Versandbedingungen nicht erfüllt',
             ],
         ];
 
