@@ -33,6 +33,8 @@ class StatusMapper
             Track::STATUS_IN_TRANSIT => [
                 'für Weitertransport vorbereitet',
                 'In Zustellung',
+                'Ankunft',
+                'Transport ins',
                 'Zustellung an Packstation', // no pickup yet, in transit
                 'Weiterleitung an Filiale',
                 'in das Zustellfahrzeug geladen',
@@ -131,7 +133,6 @@ class StatusMapper
             ],
             Track::STATUS_WARNING    => [
                 'Verzögerte Zustellung',
-                'Einstellung in Packstation nicht möglich',
                 'Zweiter Zustellversuch erfolglos',
                 'Zur Abholung benötigte Benachrichtigungskarte wird per Brief zugestellt',
                 'Sendung konnte nicht zugestellt werden',
@@ -142,8 +143,8 @@ class StatusMapper
                 'Sendung wurde zurückgestellt',
                 'Sendung verzögert sich',
                 'aufgrund höherer Gewalt',
-                'heute nicht möglich',
-                'heute leider nicht möglich',
+                'nicht möglich',
+                'nicht erfolgreich',
                 'nachverpackt',
                 'neu verpackt',
                 'Neuverpackung',
@@ -162,7 +163,6 @@ class StatusMapper
                 'Aufgrund einer Beschädigung',
                 'aufgrund Beschädigung',
                 'Nachverpackungsstelle',
-                'wegen Streik nicht möglich',
             ],
             Track::STATUS_EXCEPTION  => [
                 'Aufgrund fehlender Adressangaben wird aktuell der Empfänger der Sendung ermittelt',
@@ -172,7 +172,6 @@ class StatusMapper
                 'cksendung eingeleitet',
                 'Adressfehlers konnte die Sendung nicht zugestellt',
                 'Zustelladresse nicht angefahren',
-                'war eine Zustellung der Sendung nicht möglich',
                 'entspricht nicht den Versandbedingungen',
                 'nicht unseren Versandbedingungen',
                 'nger ist unbekannt',
