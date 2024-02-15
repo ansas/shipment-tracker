@@ -31,6 +31,12 @@ class StatusMapper
                 'direkt ab Paketzentrum dem Geschäftskunden zugestellt',
             ],
             Track::STATUS_IN_TRANSIT => [
+                'Einlieferung in Filiale',
+                'Weiterleitung an',
+                'Vorbereitung für',
+                'Weitertransport im',
+                'Sendung in Bearbeitung',
+                'im Transitland eingetroffen',
                 'für Weitertransport vorbereitet',
                 'In Zustellung',
                 'Ankunft',
