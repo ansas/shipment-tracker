@@ -125,6 +125,7 @@ class StatusMapper
             Track::STATUS_INFO       => [
                 'Neue Zustellanschrift:',
                 'wurde gewählt',
+                'Wahl Ablageort',
                 'als Empfangsoption vorgemerkt',
                 'als neue Lieferadresse gewählt',
                 'wird die Sendung an eine neue Empfängeradresse gesandt',
@@ -175,8 +176,8 @@ class StatusMapper
             Track::STATUS_EXCEPTION  => [
                 'Aufgrund fehlender Adressangaben wird aktuell der Empfänger der Sendung ermittelt',
                 'Lagerfrist überschritten',
-                'Annahme der Sendung verweigert',
-                'Annahme verweigert',
+                'verweigert',
+                'Paketstopp',
                 'cksendung eingeleitet',
                 'Adressfehlers konnte die Sendung nicht zugestellt',
                 'Zustelladresse nicht angefahren',
@@ -196,7 +197,6 @@ class StatusMapper
                 'Es erfolgte keine Einlieferung zu der per EDI Daten beauftragten Sendung',
                 'leeres Fach in Packstation vorgefunden',
                 'Paketermittlung',
-                'Rücknahme der Sendung verweigert',
                 'Sendung ist beschädigt',
                 'Versandbedingungen nicht erfüllt',
             ],
