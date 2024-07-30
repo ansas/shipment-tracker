@@ -3,27 +3,14 @@
 namespace Sauladam\ShipmentTracker\Trackers;
 
 use Carbon\Carbon;
-use DOMDocument;
-use DOMXPath;
 use Exception;
 use Sauladam\ShipmentTracker\Event;
 use Sauladam\ShipmentTracker\Track;
 use Sauladam\ShipmentTracker\Utils\StatusMapper;
-use Sauladam\ShipmentTracker\Utils\XmlHelpers;
 
 class DHL extends AbstractTracker
 {
-    use XmlHelpers;
-
-    /**
-     * @var string
-     */
-    protected $serviceEndpoint = 'https://www.dhl.de/int-verfolgen/search';
-
-    /**
-     * @var string
-     */
-    protected $trackingUrl = 'http://nolp.dhl.de/nextt-online-public/set_identcodes.do';
+    protected string $trackingUrl = 'https://www.dhl.de/int-verfolgen/data/search';
 
     /**
      * @var string
@@ -63,18 +50,11 @@ class DHL extends AbstractTracker
     public function trackingUrl($trackingNumber, $language = null, $params = [])
     {
         $language = $language ?: $this->language;
+        $params   = $params ?: $this->trackingUrlParams;
 
-        $additionalParams = !empty($params) ? $params : $this->trackingUrlParams;
+        $urlParams = ['piececode' => $trackingNumber, 'noRedirect' => 'true', 'language' => $language] + $params;
 
-        $urlParams = array_merge([
-            'lang' => $language,
-            'idc'  => $trackingNumber,
-        ],
-            $additionalParams);
-
-        $qry = http_build_query($urlParams);
-
-        return $this->trackingUrl . '?' . $qry;
+        return $this->trackingUrl . '?' . http_build_query($urlParams);
     }
 
     /**
@@ -83,30 +63,24 @@ class DHL extends AbstractTracker
      * @return Track
      * @throws Exception
      */
-    protected function buildResponse($contents)
+    protected function buildResponse($response)
     {
-        $dom = new DOMDocument;
-        @$dom->loadHTML($contents);
-        $dom->preserveWhiteSpace = false;
-
-        return $this->getTrack(new DOMXPath($dom));
+        return $this->getTrack($response);
     }
 
     /**
      * Get the shipment status history.
      *
-     * @param DOMXPath $xpath
-     *
      * @return Track
      * @throws Exception
      */
-    protected function getTrack(DOMXPath $xpath)
+    protected function getTrack(string $response)
     {
         $track = new Track;
 
-        $track->setZipRequired($this->isZipRequired($xpath));
+        $track->setZipRequired($this->isZipRequired($response));
 
-        foreach ($this->getEvents($xpath) as $event) {
+        foreach ($this->getEvents($response) as $event) {
             if (!isset($event->status)) {
                 continue;
             }
@@ -121,13 +95,13 @@ class DHL extends AbstractTracker
             }
 
             $track->addEvent(Event::fromArray([
-                'description' => isset($event->status) ? strip_tags($event->status) : '',
+                'description' => strip_tags($event->status),
                 'status'      => $status,
                 'date'        => isset($event->datum) ? Carbon::parse($event->datum) : null,
-                'location'    => isset($event->ort) ? $event->ort : '',
+                'location'    => $event->ort ?? '',
             ]));
 
-            if ($status == Track::STATUS_DELIVERED && $recipient = $this->getRecipient($xpath)) {
+            if ($status == Track::STATUS_DELIVERED && $recipient = $this->getRecipient($response)) {
                 $track->setRecipient($recipient);
             }
         }
@@ -137,12 +111,13 @@ class DHL extends AbstractTracker
         return $track;
     }
 
-    protected function isZipRequired(DOMXPath $xpath): bool
+    /**
+     * @throws \Exception
+     */
+    protected function isZipRequired(string $response): bool
     {
-        $shipings = $this->parseJson($xpath)->sendungen ?? [];
-
-        foreach ($shipings as $shiping){
-            if ($shiping->plzBenoetigt ?? false) {
+        foreach ($this->parseJson($response)->sendungen ?? [] as $shipping) {
+            if ($shipping->plzBenoetigt ?? false) {
                 return true;
             }
         }
@@ -153,14 +128,11 @@ class DHL extends AbstractTracker
     /**
      * Get the events.
      *
-     * @param DOMXPath $xpath
-     *
-     * @return array
      * @throws Exception
      */
-    protected function getEvents(DOMXPath $xpath)
+    protected function getEvents(string $response): array
     {
-        $progress = $this->parseJson($xpath)->sendungen[0]->sendungsdetails->sendungsverlauf;
+        $progress = $this->parseJson($response)->sendungen[0]->sendungsdetails->sendungsverlauf;
 
         return $progress->fortschritt > 0
             ? (array) $progress->events
@@ -170,74 +142,25 @@ class DHL extends AbstractTracker
     /**
      * Parse the recipient.
      *
-     * @param DOMXPath $xpath
-     *
-     * @return null|string
      * @throws Exception
      */
-    protected function getRecipient(DOMXPath $xpath)
+    protected function getRecipient(string $response): ?string
     {
-        $deliveryDetails = $this->parseJson($xpath)->sendungen[0]->sendungsdetails->zustellung;
-
-        return isset($deliveryDetails->empfaenger) && isset($deliveryDetails->empfaenger->name)
-            ? $deliveryDetails->empfaenger->name
-            : null;
+        return $this->parseJson($response)->sendungen[0]->sendungsdetails->zustellung->empfaenger->name ?? null;
     }
 
     /**
-     * Parse the JSON from the script tag.
-     *
-     * @param DOMXPath $xpath
-     *
-     * @return mixed|object
      * @throws Exception
      */
-    protected function parseJson(DOMXPath $xpath)
+    protected function parseJson(string $response): object
     {
         if (!$this->parsedJson) {
-            $scriptTags = $xpath->query("//script");
-
-            /** @var \DOMNode $tag */
-            foreach ($scriptTags as $tag) {
-                $matched = preg_match("/initialState: JSON\.parse\((.*)\),/m", $tag->nodeValue, $matches);
-                if ($matched) {
-                    $this->parsedJson = json_decode(json_decode($matches[1]));
-                }
-            }
-
+            $this->parsedJson = json_decode($response);
             if (!$this->parsedJson) {
                 throw new Exception("Unable to parse DHL tracking data for [{$this->parcelNumber}].");
             }
         }
 
         return $this->parsedJson;
-    }
-
-    /**
-     * Build the endpoint url
-     *
-     * @param string      $trackingNumber
-     * @param string|null $language
-     * @param array       $params
-     *
-     * @return string
-     */
-    protected function getEndpointUrl($trackingNumber, $language = null, $params = [])
-    {
-        $language = $language ?: $this->language;
-
-        $additionalParams = !empty($params) ? $params : $this->endpointUrlParams;
-
-        $urlParams = array_merge(
-            [
-                'lang'     => $language,
-                'language' => $language,
-                'idc'      => $trackingNumber,
-                'domain'   => 'de',
-            ],
-            $additionalParams
-        );
-
-        return $this->serviceEndpoint . '?' . http_build_query($urlParams);
     }
 }
