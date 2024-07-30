@@ -137,6 +137,7 @@ class StatusMapper
                 'Abgang der Sendung aus der Paketermittlung',
                 'Paketmitnahme vom Ablageort gebucht',
                 'Weiterleitung an neue Empfängeradresse',
+                'neue Adresse des Empfängers weitergeleitet',
             ],
             Track::STATUS_WARNING    => [
                 'Verzögerte Zustellung',
