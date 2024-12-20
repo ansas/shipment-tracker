@@ -93,6 +93,7 @@ class StatusMapper
                 'Abholung erfolgreich',
                 'Abholung wurde erfolgreich',
                 'Auslands-Sendung an DHL übergeben',
+                'Sendung wird an die gewünschte',
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der',
@@ -133,6 +134,7 @@ class StatusMapper
                 'Lufttransport',
                 'Weiterleitung an neue Empfängeradresse',
                 'neue Adresse des Empfängers weitergeleitet',
+                'wurde als Zustelladresse gewählt',
             ],
             Track::STATUS_WARNING    => [
                 'Verzögerte Zustellung',
