@@ -135,6 +135,8 @@ class StatusMapper
                 'Weiterleitung an neue Empfängeradresse',
                 'neue Adresse des Empfängers weitergeleitet',
                 'wurde als Zustelladresse gewählt',
+                'im Ursprungsland freigegeben',
+                'Freigabe der Sendung im Ursprungsland',
             ],
             Track::STATUS_WARNING    => [
                 'Verzögerte Zustellung',
@@ -170,6 +172,8 @@ class StatusMapper
                 'Aufgrund einer Beschädigung',
                 'aufgrund Beschädigung',
                 'Nachverpackungsstelle',
+                'Zustellversuch erfolgt am nächsten Werktag',
+                'Zustellversuch am nächsten Werktag',
             ],
             Track::STATUS_EXCEPTION  => [
                 'Aufgrund fehlender Adressangaben wird aktuell der Empfänger der Sendung ermittelt',
@@ -197,6 +201,7 @@ class StatusMapper
                 'Paketermittlung',
                 'Sendung ist beschädigt',
                 'Versandbedingungen nicht erfüllt',
+                'Ermittlung Empfängeradresse',
             ],
         ];
 
