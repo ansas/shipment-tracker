@@ -15,6 +15,7 @@ class StatusMapper
                 'The shipment is being returned',
                 'an den Absender zurück',
                 'Rücksendung an Absender',
+                'zurück zum Absender',
             ],
             Track::STATUS_DELIVERED  => [
                 'Zustellung erfolgreich',
