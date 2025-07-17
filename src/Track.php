@@ -19,6 +19,7 @@ class Track
     const STATUS_PICKUP     = 'pickup';
     const STATUS_UNKNOWN    = 'unknown';
     const STATUS_WARNING    = 'warning';
+    const STATUS_BACK       = 'back';
 
     use AdditionalDetails;
 

@@ -9,6 +9,13 @@ class StatusMapper
     public static function fromDescription(string $description): string
     {
         $statuses = [
+            Track::STATUS_BACK       => [
+                'cksendung eingeleitet',
+                'Es erfolgt eine Rücksendung',
+                'The shipment is being returned',
+                'an den Absender zurück',
+                'Rücksendung an Absender',
+            ],
             Track::STATUS_DELIVERED  => [
                 'Zustellung erfolgreich',
                 'Abholung in der Filiale ist erfolgt',
@@ -180,7 +187,6 @@ class StatusMapper
                 'Lagerfrist überschritten',
                 'verweigert',
                 'Paketstopp',
-                'cksendung eingeleitet',
                 'Adressfehlers konnte die Sendung nicht zugestellt',
                 'Zustelladresse nicht angefahren',
                 'entspricht nicht den Versandbedingungen',
@@ -192,10 +198,6 @@ class StatusMapper
                 'is incorrect',
                 'recipient has not picked up the shipment',
                 'nicht in der Filiale abgeholt',
-                'The shipment is being returned',
-                'Es erfolgt eine Rücksendung',
-                'an den Absender zurück',
-                'Rücksendung an Absender',
                 'Es erfolgte keine Einlieferung zu der per EDI Daten beauftragten Sendung',
                 'leeres Fach in Packstation vorgefunden',
                 'Paketermittlung',
