@@ -9,6 +9,9 @@ class StatusMapper
     public static function fromDescription(string $description): string
     {
         $statuses = [
+            Track::STATUS_LOCATION => [
+                'Ablageort', // "Wunschort" does not appear in the status, only in the recipient field, when the package has been delivered
+            ],
             Track::STATUS_BACK       => [
                 'cksendung eingeleitet',
                 'Es erfolgt eine Rücksendung',
@@ -127,7 +130,6 @@ class StatusMapper
             Track::STATUS_INFO       => [
                 'Neue Zustellanschrift',
                 'wurde gewählt',
-                'Wahl Ablageort',
                 'vorgemerkt',
                 'als neue Lieferadresse gewählt',
                 'wird die Sendung an eine neue Empfängeradresse gesandt',

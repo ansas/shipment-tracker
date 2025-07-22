@@ -20,6 +20,7 @@ class Track
     const STATUS_UNKNOWN    = 'unknown';
     const STATUS_WARNING    = 'warning';
     const STATUS_BACK       = 'back';
+    const STATUS_LOCATION   = 'location';
 
     use AdditionalDetails;
 
