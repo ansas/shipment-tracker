@@ -9,6 +9,9 @@ class StatusMapper
     public static function fromDescription(string $description): string
     {
         $statuses = [
+            Track::STATUS_REFUSED => [
+                'verweigert',
+            ],
             Track::STATUS_LOCATION => [
                 'Ablageort', // "Wunschort" does not appear in the status, only in the recipient field, when the package has been delivered
             ],
@@ -19,6 +22,8 @@ class StatusMapper
                 'an den Absender zurück',
                 'Rücksendung an Absender',
                 'zurück zum Absender',
+                'nicht in der Filiale abgeholt',
+                'nicht in der Packstation abgeholt'
             ],
             Track::STATUS_DELIVERED  => [
                 'Zustellung erfolgreich',
@@ -188,7 +193,6 @@ class StatusMapper
             Track::STATUS_EXCEPTION  => [
                 'Aufgrund fehlender Adressangaben wird aktuell der Empfänger der Sendung ermittelt',
                 'Lagerfrist überschritten',
-                'verweigert',
                 'Paketstopp',
                 'Adressfehlers konnte die Sendung nicht zugestellt',
                 'Zustelladresse nicht angefahren',
@@ -200,7 +204,6 @@ class StatusMapper
                 'ist falsch',
                 'is incorrect',
                 'recipient has not picked up the shipment',
-                'nicht in der Filiale abgeholt',
                 'Es erfolgte keine Einlieferung zu der per EDI Daten beauftragten Sendung',
                 'leeres Fach in Packstation vorgefunden',
                 'Paketermittlung',
