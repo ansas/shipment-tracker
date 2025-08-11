@@ -21,6 +21,7 @@ class Track
     const STATUS_WARNING    = 'warning';
     const STATUS_BACK       = 'back';
     const STATUS_LOCATION   = 'location';
+    const STATUS_REFUSED    = 'refused';
 
     use AdditionalDetails;
 
