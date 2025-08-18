@@ -8,6 +8,9 @@ class StatusMapper
 {
     public static function fromDescription(string $description): string
     {
+        // Sanitize
+        $description = str_ireplace('Packstation / DeinFach Automat', 'Packstation', $description);
+
         $statuses = [
             Track::STATUS_REFUSED => [
                 'verweigert',
