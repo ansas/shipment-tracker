@@ -116,6 +116,7 @@ class StatusMapper
                 'Sendung wird an die gewünschte',
                 'prepared for onward transport',
                 'im Zustell-Depot bearbeitet',
+                'Sendung ist mit Flug',
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der',
