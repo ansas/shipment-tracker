@@ -17,6 +17,7 @@ class StatusMapper
             ],
             Track::STATUS_LOCATION => [
                 'Ablageort', // "Wunschort" does not appear in the status, only in the recipient field, when the package has been delivered
+                'a preferred location',
             ],
             Track::STATUS_BACK       => [
                 'cksendung eingeleitet',
@@ -113,6 +114,8 @@ class StatusMapper
                 'Abholung wurde erfolgreich',
                 'Auslands-Sendung an DHL übergeben',
                 'Sendung wird an die gewünschte',
+                'prepared for onward transport',
+                'im Zustell-Depot bearbeitet',
             ],
             Track::STATUS_PICKUP     => [
                 'Die Sendung liegt in der',
@@ -190,8 +193,10 @@ class StatusMapper
                 'Aufgrund einer Beschädigung',
                 'aufgrund Beschädigung',
                 'Nachverpackungsstelle',
+                'in der Nachverpackung von DHL bearbeitet',
                 'Zustellversuch erfolgt am nächsten Werktag',
                 'Zustellversuch am nächsten Werktag',
+                'konnte nicht in die gewünschte Packstation eingestellt werden',
             ],
             Track::STATUS_EXCEPTION  => [
                 'Aufgrund fehlender Adressangaben wird aktuell der Empfänger der Sendung ermittelt',
@@ -213,6 +218,7 @@ class StatusMapper
                 'Sendung ist beschädigt',
                 'Versandbedingungen nicht erfüllt',
                 'Ermittlung Empfängeradresse',
+                'zum Absender zurückgesendet',
             ],
         ];
 
