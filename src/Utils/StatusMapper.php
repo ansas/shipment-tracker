@@ -135,6 +135,9 @@ class StatusMapper
                 'The shipment is being brought to',
                 'beim Zoll abholen',
                 'liegt für den Empfänger zur Abholung bereit',
+                'In Kürze in Filiale abholbereit',
+                'am nächsten Werktag in Filiale abholbereit',
+                'ist voraussichtlich in Kürze abholbereit',
             ],
             Track::STATUS_DIGITAL    => [
                 'elektronisch an',
@@ -198,6 +201,7 @@ class StatusMapper
                 'Zustellversuch erfolgt am nächsten Werktag',
                 'Zustellversuch am nächsten Werktag',
                 'konnte nicht in die gewünschte Packstation eingestellt werden',
+                'konnte nicht in die Packstation eingestellt werden und wird in die Filiale',
             ],
             Track::STATUS_EXCEPTION  => [
                 'Aufgrund fehlender Adressangaben wird aktuell der Empfänger der Sendung ermittelt',
