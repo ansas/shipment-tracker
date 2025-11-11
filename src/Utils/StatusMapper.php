@@ -27,7 +27,8 @@ class StatusMapper
                 'Rücksendung an Absender',
                 'zurück zum Absender',
                 'nicht in der Filiale abgeholt',
-                'nicht in der Packstation abgeholt'
+                'nicht in der Packstation abgeholt',
+                'auf dem Weg zum Absender',
             ],
             Track::STATUS_DELIVERED  => [
                 'Zustellung erfolgreich',
