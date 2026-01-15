@@ -22,6 +22,7 @@ class Track
     const STATUS_BACK       = 'back';
     const STATUS_LOCATION   = 'location';
     const STATUS_REFUSED    = 'refused';
+    const STATUS_REPACKED   = 'repacked';
 
     use AdditionalDetails;
 

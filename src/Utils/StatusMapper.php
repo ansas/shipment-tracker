@@ -12,6 +12,10 @@ class StatusMapper
         $description = str_ireplace('Packstation / DeinFach Automat', 'Packstation', $description);
 
         $statuses = [
+            Track::STATUS_REPACKED => [
+                'nachverpackt',
+                'Nachverpackung'
+            ],
             Track::STATUS_REFUSED => [
                 'verweigert',
             ],
@@ -52,6 +56,10 @@ class StatusMapper
                 'direkt ab Paketzentrum dem Geschäftskunden zugestellt',
             ],
             Track::STATUS_IN_TRANSIT => [
+                'in Kürze in Filiale abholbereit',
+                'Sendung wird zur Abholung',
+                'Sendung abholen können',
+                'sobald die Sendung in der Filiale abholbereit ist',
                 'Einlieferung in Filiale',
                 'Weiterleitung an',
                 'Vorbereitung',
@@ -120,6 +128,7 @@ class StatusMapper
                 'Sendung ist mit Flug',
             ],
             Track::STATUS_PICKUP     => [
+                'liegt ab sofort in der Filiale',
                 'Die Sendung liegt in der',
                 'Die Sendung liegt zur Abholung',
                 'liegt in der Filiale zur Abholung',
@@ -129,14 +138,12 @@ class StatusMapper
                 'Uhrzeit der Abholung kann der Benachrichtigungskarte entnommen werden',
                 'earliest time when it can be picked up can be found on the notification card',
                 'shipment is ready for pick-up at the PACKSTATION',
-                'Sendung wird zur Abholung in die',
                 'Sendung wurde zur Abholung in die',
                 'wurde in eine Filiale weitergeleitet',
                 'wurde an eine Hauspoststelle weitergeleitet',
                 'The shipment is being brought to',
                 'beim Zoll abholen',
                 'liegt für den Empfänger zur Abholung bereit',
-                'In Kürze in Filiale abholbereit',
                 'am nächsten Werktag in Filiale abholbereit',
                 'ist voraussichtlich in Kürze abholbereit',
             ],
@@ -165,6 +172,7 @@ class StatusMapper
                 'Freigabe der Sendung im Ursprungsland',
             ],
             Track::STATUS_WARNING    => [
+                'New delivery address stated',
                 'Verzögerte Zustellung',
                 'Zweiter Zustellversuch erfolglos',
                 'Zur Abholung benötigte Benachrichtigungskarte wird per Brief zugestellt',
