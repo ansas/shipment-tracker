@@ -12,10 +12,6 @@ class StatusMapper
         $description = str_ireplace('Packstation / DeinFach Automat', 'Packstation', $description);
 
         $statuses = [
-            Track::STATUS_REPACKED => [
-                'nachverpackt',
-                'Nachverpackung'
-            ],
             Track::STATUS_REFUSED => [
                 'verweigert',
             ],
@@ -33,6 +29,10 @@ class StatusMapper
                 'nicht in der Filiale abgeholt',
                 'nicht in der Packstation abgeholt',
                 'auf dem Weg zum Absender',
+            ],
+            Track::STATUS_REPACKED => [
+                'nachverpackt',
+                'Nachverpackung'
             ],
             Track::STATUS_DELIVERED  => [
                 'Zustellung erfolgreich',
