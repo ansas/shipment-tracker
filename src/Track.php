@@ -11,6 +11,7 @@ use Sauladam\ShipmentTracker\Utils\Utils;
 class Track
 {
     const STATUS_DELIVERED  = 'delivered';
+    const STATUS_DISPOSED   = 'disposed';
     const STATUS_DIGITAL    = 'digital';
     const STATUS_EXCEPTION  = 'exception';
     const STATUS_INFO       = 'info';
