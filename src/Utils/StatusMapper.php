@@ -12,6 +12,9 @@ class StatusMapper
         $description = str_ireplace('Packstation / DeinFach Automat', 'Packstation', $description);
 
         $statuses = [
+            Track::STATUS_DISPOSED => [
+                'entsorgt',
+            ],
             Track::STATUS_REFUSED => [
                 'verweigert',
             ],
